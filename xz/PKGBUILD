@@ -1,0 +1,60 @@
+pkgbase='xz'
+pkgname=('xz-doc' 'xz-dev' 'xz-lib' 'xz')
+pkgver=5.2.1.r87.gbc577d3
+pkgrel=1
+pkgdesc='Library and command line tools for XZ and LZMA compressed files'
+url='https://tukaani.org/xz/'
+arch=('x86_64')
+license=('custom')
+depends_doc=()
+depends_dev=('xz')
+depends_lib=('musl')
+depends=('xz-lib')
+makedepends=('gettext')
+source=(git+https://git.tukaani.org/xz.git)
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --mandir='/usr/share/man' \
+              --infodir='/usr/share/info' \
+              --localstatedir='/var' \
+              --disable-rpath \
+              --disable-werror
+  
+  make
+}
+
+package() {
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+  
+  install -Dm644 COPYING "${tmpdir}/usr/share/licenses/${pkgbase}"
+}
+
+package_xz-doc() {
+  package-doc
+}
+
+package_xz-dev() {
+  package-dev
+}
+
+package_xz-lib() {
+  package-lib
+}
+
+package_xz() {
+  package-base  
+}
