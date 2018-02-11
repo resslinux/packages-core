@@ -1,0 +1,60 @@
+pkgbase='bzip2'
+pkgname=('bzip2-doc' 'bzip2-dev' 'bzip2' 'bzip2-tools')
+pkgver=1.0.6
+pkgrel=1
+pkgdesc='A high-quality data compression program'
+url='http://www.bzip.org/'
+arch=('x86_64')
+license=('BSD')
+depends_doc=()
+depends_dev=('bzip2')
+depends_lib=('musl')
+depends=('bzip2')
+source=('http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'
+        'makefile.patch')
+sha256sums=('a2848f34fcd5d6cf47def00461fcb528a0484d8edef8208d6d2e2909dc61d9cd'
+            '9718cedc410c69c92416eef1579fb6d126b13e993ca3a9495dacad076e5ed5fb')
+
+prepare() {
+  cd "${pkgbase}-${pkgver}"
+  
+  patch -Np1 -i "${srcdir}/makefile.patch"
+}
+
+build() {
+  cd "${pkgbase}-${pkgver}"
+  
+  make -f Makefile-libbz2_so all
+  make all
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}-${pkgver}"
+
+  make PREFIX="${tmpdir}/usr" install
+  
+  install -D "libbz2.so.${pkgver}" "${tmpdir}/usr/lib/libbz2.so.${pkgver}"
+  
+  ln -s "libbz2.so.${pkgver}" "${tmpdir}/usr/lib/libbz2.so"
+  ln -s "libbz2.so.${pkgver}" "${tmpdir}/usr/lib/libbz2.so.${pkgver%%.*}"
+}
+
+package_bzip2-doc() {
+  package-doc
+}
+
+package_bzip2-dev() {
+  package-dev
+}
+
+package_bzip2() {
+  install -d "${pkgdir}/usr/lib"
+  
+  mv "${tmpdir}"/usr/lib/*.so.* "${pkgdir}/usr/lib/"
+}
+
+package_bzip2-tools() {
+  package-base
+}
