@@ -1,0 +1,56 @@
+pkgbase='pigz'
+pkgname=('pigz-doc' 'pigz')
+pkgver=2.4.r0.gfe822cb
+pkgrel=1
+pkgdesc='Parallel implementation of the gzip file compressor'
+url='https://zlib.net/pigz/'
+arch=('x86_64')
+license=('custom')
+groups=('base')
+depends_doc=()
+depends=('zlib')
+makedepends=('zlib-dev')
+source=('git://github.com/madler/pigz.git'
+        'makefile.patch')
+sha256sums=('SKIP'
+            '7f818db316ce4260ea2c35c1751dcd4a40801e49a15024582f600c15ed857f64')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/makefile.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  make pigzj
+}
+
+package(){
+  package-init
+  
+  cd "${pkgbase}"
+  
+  install -Dm755 "pigzj" "${tmpdir}/usr/bin/pigz"
+  
+  for i in unpigz gzip gunzip; do
+    ln -s "pigz" "${tmpdir}/usr/bin/${i}"
+  done
+  
+  install -Dm644 "pigz.1" "${tmpdir}/usr/share/man/man1/pigz.1"
+}
+
+package_pigz-doc() {
+  package-doc
+}
+
+package_pigz() {
+  package-base
+}

@@ -1,0 +1,27 @@
+pkgname='linux-firmware'
+pkgver=20180119.2a713be
+pkgrel=1
+pkgdesc='Firmware files for Linux'
+url='https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git'
+arch=('any')
+license=('GPL2' 'GPL3' 'custom')
+depends=('filesystem')
+options=(!strip)
+source=('git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+
+  echo $(TZ=UTC git show -s --pretty=%cd --date=format-local:%Y%m%d HEAD).$(git rev-parse --short HEAD)
+}
+
+package(){
+  cd "${pkgbase}"
+  
+  make DESTDIR="${pkgdir}" install
+  rm "${pkgdir}/lib/firmware/"{Makefile,README,configure,GPL-3}
+
+  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm644 LICEN* WHENCE "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

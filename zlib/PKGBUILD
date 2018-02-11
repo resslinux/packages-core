@@ -1,0 +1,50 @@
+pkgbase='zlib'
+pkgname=('zlib-doc' 'zlib-dev' 'zlib')
+pkgver=1.2.11.r0.gcacf7f1
+pkgrel=1
+pkgdesc='Compression library implementing the deflate compression method found in gzip and PKZIP'
+url='https://zlib.net/'
+arch=('x86_64')
+license=('zlib')
+depends_doc=()
+depends_dev=('zlib')
+depends=('musl')
+source=('git://github.com/madler/zlib.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  cmake -G 'Ninja' \
+        -DCMAKE_BUILD_TYPE:STRING='Release' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DINSTALL_LIB_DIR:PATH='/usr/lib'
+  
+  ninja
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  DESTDIR="${tmpdir}" ninja install
+}
+
+package_zlib-doc() {
+  package-doc
+}
+
+package_zlib-dev() {
+  package-dev
+}
+
+package_zlib() {
+  package-base
+}

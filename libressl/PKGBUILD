@@ -1,0 +1,80 @@
+pkgbase='libressl'
+pkgname=('libressl-doc' 'libressl-dev' 'libressl-lib' 'libressl')
+pkgver=2.6.2.r26.gaf62444
+pkgrel=1
+pkgdesc='Version of the TLS/crypto stack forked from OpenSSL'
+url='https://www.libressl.org/'
+arch=('x86_64')
+license=('custom')
+depends_doc=()
+depends_dev=('libressl')
+depends_lib=('musl')
+depends=('musl' 'libressl-lib')
+makedepends=('linux-headers')
+source=('libressl'::'git://github.com/libressl-portable/portable'
+        'libressl-openbsd'::'git://github.com/libressl-portable/openbsd'
+        'netcat.c.patch')
+sha256sums=('SKIP'
+            'SKIP'
+            '4dfaf606b630898b3c3ddf659c585208fef85f1643fdda0dc22d8607ff769dd7')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  ln -sf "${srcdir}/${pkgbase}-openbsd" "openbsd"
+  
+  rm 'patches/netcat.c.patch'
+  
+  mv "${srcdir}/netcat.c.patch" "patches/"
+  
+  ./update.sh
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  
+  cmake -G 'Ninja' \
+        -DCMAKE_BUILD_TYPE:STRING='Release' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DOPENSSLDIR:PATH='/etc/ssl'
+
+  ninja
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  DESTDIR="${tmpdir}" ninja install
+  
+  install -Dm644 "COPYING" "${tmpdir}/usr/share/licenses/${pkgbase}/COPYING"
+  
+  rm "${tmpdir}/etc/ssl/cert.pem"
+}
+
+package_libressl-doc() {
+  package-doc
+}
+
+package_libressl-dev() {
+  package-dev
+}
+
+package_libressl-lib() {
+  package-lib
+}
+
+package_libressl() {
+  package-base
+}

@@ -1,0 +1,69 @@
+pkgbase='iana-etc'
+pkgname=('iana-etc-data' 'iana-etc')
+pkgver=20180131
+pkgrel=1
+pkgdesc='/etc/protocols and /etc/services provided by IANA'
+url='http://www.iana.org/protocols'
+arch=('any')
+license=('custom:none')
+source=('LICENSE')
+sha256sums=('dd37e92942d5a4024f1c77df49d61ca77fc6284691814903a741785df61f78cb')
+
+pkgver() {
+  cd "${srcdir}"
+  
+  awk -F"[<>]" '/updated/{print$3;nextfile}' * |
+  sort -n | tail -n 1 | tr -d -
+}
+
+prepare() {
+  cd "${srcdir}"
+  
+  if [ -f "protocol-numbers.xml" ]; then
+    rm "protocol-numbers.xml"
+  fi
+  
+  wget "https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xml"
+  
+  if [ -f "service-names-port-numbers.xml" ]; then
+    rm "service-names-port-numbers.xml"
+  fi
+  
+  wget "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xml"
+}
+
+package() {
+  return 0
+}
+
+package_iana-etc-data() {
+  install -Dm644 "${srcdir}/protocol-numbers.xml" "${pkgdir}/usr/share/iana-etc/protocol-numbers.iana"
+  install -Dm644 "${srcdir}/service-names-port-numbers.xml" "${pkgdir}/usr/share/iana-etc/port-numbers.iana"
+}
+
+package_iana-etc() {
+  backup=('etc/protocols'
+          'etc/services')
+  
+  install -d "${pkgdir}/etc"
+  
+  awk -F"[<>]" '
+BEGIN { print "# Full data: /usr/share/iana-etc/protocol-numbers.iana\n" }
+(/<record/) { v=n="" }
+(/<value/) { v=$3 }
+(/<name/ && $3!~/ /) { n=$3 }
+(/<\/record/ && n && v!="") { printf "%-12s %3i %s\n", tolower(n),v,n }
+' "${srcdir}/protocol-numbers.xml" > "${pkgdir}/etc/protocols"
+
+  awk -F"[<>]" '
+BEGIN { print "# Full data: /usr/share/iana-etc/port-numbers.iana\n" }
+(/<record/) { n=u=p=c="" }
+(/<name/ && !/\(/) { n=$3 }
+(/<number/) { u=$3 }
+(/<protocol/) { p=$3 }
+(/Unassigned/ || /Reserved/ || /historic/) { c=1 }
+(/<\/record/ && n && u && p && !c) { printf "%-15s %5i/%s\n", n,u,p }
+' "${srcdir}/service-names-port-numbers.xml" > "${pkgdir}/etc/services"
+
+  install -Dm644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/iana-etc/LICENSE"
+}

@@ -1,0 +1,22 @@
+pkgname='pacman-mirrorlist'
+pkgver=20180123.r0.g5531edb
+pkgrel=1
+pkgdesc='Ress Linux mirror list for use by pacman'
+url='https://github.com/resslinux/pacman-mirrorlist'
+arch=('any')
+license=('BSD')
+backup=('etc/pacman.d/mirrorlist')
+source=('git://github.com/resslinux/pacman-mirrorlist.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+package() {
+  cd "${pkgname}"
+  
+  install -Dm644 "mirrorlist" "${pkgdir}/etc/pacman.d/mirrorlist"
+}

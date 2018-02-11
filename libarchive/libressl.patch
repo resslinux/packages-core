@@ -1,0 +1,26 @@
+--- a/libarchive/archive_hmac.c
++++ b/libarchive/archive_hmac.c
+@@ -176,10 +176,8 @@
+ static int
+ __hmac_sha1_init(archive_hmac_sha1_ctx *ctx, const uint8_t *key, size_t key_len)
+ {
+-	*ctx = HMAC_CTX_new();
+-	if (*ctx == NULL)
+-		return -1;
+-	HMAC_Init_ex(*ctx, key, key_len, EVP_sha1(), NULL);
++	HMAC_CTX_init(ctx);
++	HMAC_Init(ctx, key, key_len, EVP_sha1());
+ 	return 0;
+ }
+ 
+@@ -201,8 +199,8 @@
+ static void
+ __hmac_sha1_cleanup(archive_hmac_sha1_ctx *ctx)
+ {
+-	HMAC_CTX_free(*ctx);
+-	*ctx = NULL;
++	HMAC_CTX_cleanup(ctx);
++	memset(ctx, 0, sizeof(*ctx));
+ }
+ 
+ #else

@@ -1,0 +1,71 @@
+pkgbase='libarchive'
+pkgname=('libarchive-doc' 'libarchive-dev' 'libarchive' 'libarchive-tools')
+pkgver=3.3.2.r60.g2d9156bb
+pkgrel=1
+pkgdesc='library that can create and read several streaming archive formats'
+url='https://libarchive.org/'
+arch=('x86_64')
+license=('BSD')
+depends_doc=()
+depends_lib=('libressl-lib' 'zlib')
+depends_dev=('libarchive' 'libressl-dev')
+depends=('libressl-lib')
+makedepends=('libressl-dev' 'zlib-dev')
+source=('git://github.com/libarchive/libarchive.git'
+        'libressl.patch')
+sha256sums=('SKIP'
+            '92dd9c1b5cd63a6dea70f26f02c6736842aa135e3dcde14e425dbd2354c29b75')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/libressl.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+              
+  cmake -G 'Ninja' \
+        -DCMAKE_BUILD_TYPE:STRING='Release' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DENABLE_ACL:BOOL=OFF \
+        -DENABLE_BZip2:BOOL=OFF \
+        -DENABLE_EXPAT:BOOL=OFF \
+        -DENABLE_LIBXML2:BOOL=OFF \
+        -DENABLE_LZMA:BOOL=OFF \
+        -DENABLE_LZO:BOOL=OFF \
+        -DENABLE_NETTLE:BOOL=OFF \
+        -DENABLE_XATTR:BOOL=OFF
+  
+  ninja
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  DESTDIR="${tmpdir}" ninja install
+}
+
+package_libarchive-doc() {
+  package-doc
+}
+
+package_libarchive-dev() {
+  package-dev
+}
+
+package_libarchive() {
+  package-lib
+}
+
+package_libarchive-tools() {
+  package-base
+}

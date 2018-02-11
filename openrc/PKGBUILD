@@ -1,0 +1,47 @@
+pkgbase='openrc'
+pkgname=('openrc-doc' 'openrc-dev' 'openrc')
+pkgver=0.34.r57.g11058249
+pkgrel=1
+pkgdesc='Dependency based init system that works with sysvinit'
+url='https://wiki.gentoo.org/wiki/Project:OpenRC'
+arch=('x86_64')
+license=('BSD')
+depends_doc=()
+depends_dev=('openrc')
+depends=('musl')
+source=('git://anongit.gentoo.org/proj/openrc.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  make LIBEXECDIR='/lib/rc'
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make LIBEXECDIR='/lib/rc' DESTDIR="${tmpdir}" install
+}
+
+package_openrc-doc() {
+  package-doc
+}
+
+package_openrc-dev() {
+  package-dev
+}
+
+package_openrc() {
+  groups=('base')
+  
+  package-base
+}

@@ -1,0 +1,64 @@
+pkgbase='musl'
+pkgname=('musl-dev' 'musl')
+pkgver=1.1.18.r67.gb3ae7bea
+pkgrel=1
+pkgdesc='Lightweight implementation of C standard library'
+url='https://www.musl-libc.org/'
+arch=('x86_64')
+license=('MIT')
+depends_dev=('musl')
+depends=('filesystem')
+source=('git://git.musl-libc.org/musl'
+        '__stack_chk_fail_local.c'
+        'compiler-rt.patch')
+sha256sums=('SKIP'
+            '299a7d75a09de3e2e11e7fb4acc3182e4a14e868093d2f30938fce9bfcff13da'
+            'f818027345c0fde641b1edd5d0c79b0581293d65e57d59fbf0b0b7c490c6e57b')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/compiler-rt.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  
+  # provide minimal libssp_nonshared.a so we don't need libssp from gcc
+  ${CROSS_COMPILE}clang $CPPFLAGS $CFLAGS -c "${srcdir}/__stack_chk_fail_local.c" -o "__stack_chk_fail_local.o"
+  ${CROSS_COMPILE}ar r "libssp_nonshared.a" "__stack_chk_fail_local.o"
+
+  # note: not autotools
+  ./configure --prefix=/usr
+
+  make
+}
+
+package() {
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+
+  cp "libssp_nonshared.a" "${tmpdir}/usr/lib/"
+  
+  install -d "${tmpdir}/bin"
+  ln -sf "/lib/ld-musl-${CARCH}.so.1" "${tmpdir}/bin/ldd"
+}
+
+package_musl-dev() {
+  package-dev
+}
+
+package_musl() {
+  package-base
+}

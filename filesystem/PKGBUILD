@@ -1,0 +1,90 @@
+pkgname='filesystem'
+pkgver=20180121.r2.g7dd48b9
+pkgrel=1
+pkgdesc='Ress Linux base filesystem'
+url='https://github.com/resslinux/filesystem'
+arch=('any')
+license=('BSD')
+groups=('base')
+depends=('iana-etc')
+backup=('etc/TZ'
+        'etc/fstab'
+        'etc/group'
+        'etc/hostname'
+        'etc/hosts'
+        'etc/inittab'
+        'etc/modules'
+        'etc/motd'
+        'etc/passwd'
+        'etc/profile'
+        'etc/resolv.conf'
+        'etc/securetty'
+        'etc/shadow'
+        'etc/shells'
+        'etc/sysctl.conf')
+source=('git://github.com/resslinux/filesystem.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+package(){
+  cd "${pkgname}"
+  
+  make DESTDIR="${pkgdir}" install
+  
+  cd "${pkgdir}"
+  
+  install -m 0755 -d dev \
+                     dev/pts \
+                     dev/shm \
+                     etc \
+                     etc/conf.d \
+                     etc/crontabs \
+                     etc/init.d \
+                     etc/modprobe.d \
+                     etc/modules-load.d \
+                     etc/network/if-down.d \
+                     etc/network/if-post-down.d \
+                     etc/network/if-pre-up.d \
+                     etc/network/if-up.d \
+                     etc/opt \
+                     etc/periodic/15min \
+                     etc/periodic/daily \
+                     etc/periodic/hourly \
+                     etc/periodic/monthly \
+                     etc/periodic/weekly \
+                     etc/profile.d \
+                     etc/sysctl.d \
+                     home \
+                     mnt \
+                     proc \
+                     run \
+                     sbin \
+                     srv \
+                     sys \
+                     usr/bin \
+                     usr/local/bin \
+                     usr/local/lib \
+                     usr/local/share \
+                     usr/sbin \
+                     usr/share \
+                     usr/share/man \
+                     usr/share/misc \
+                     var/cache \
+                     var/cache/misc \
+                     var/lib \
+                     var/lib/misc \
+                     var/local \
+                     var/lock/subsys \
+                     var/log \
+                     var/opt \
+                     var/run
+  
+  install -d -m 0700 root
+  install -d -m 1777 tmp var/tmp
+  install -d -m 0555 var/empty
+}

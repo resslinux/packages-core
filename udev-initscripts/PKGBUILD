@@ -1,0 +1,29 @@
+pkgrealname='udev-gentoo-scripts'
+pkgname='udev-initscripts'
+pkgver=32.r0.g413b37e
+pkgrel=1
+pkgdesc='udev startup scripts for openrc'
+url='https://gitweb.gentoo.org/proj/udev-gentoo-scripts.git/'
+arch=('any')
+license=('GPL2')
+depends=('filesystem')
+source=('git://anongit.gentoo.org/proj/udev-gentoo-scripts.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgrealname}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+package(){
+  cd "${pkgrealname}"
+  
+  make DESTDIR="${pkgdir}" install
+  
+  install -d "${pkgdir}/etc/runlevels/sysinit/"
+  
+  for i in udev-trigger udev; do
+    ln -s "/etc/init.d/${i}" "${pkgdir}/etc/runlevels/sysinit/${i}"
+  done
+}
