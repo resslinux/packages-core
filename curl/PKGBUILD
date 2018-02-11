@@ -1,0 +1,65 @@
+pkgbase='curl'
+pkgname=('curl-doc' 'curl-dev' 'libcurl' 'curl')
+pkgver=7.58.0.r45.ga19afaccf
+pkgrel=1
+pkgdesc='An URL retrival utility and library'
+url='https://curl.haxx.se/'
+arch=('x86_64')
+license=('MIT')
+depends_doc=()
+depends_lib=('ca-certificates' 'zlib')
+depends_dev=('libcurl')
+depends=('libcurl')
+makedepends=('libressl-dev')
+source=('git://github.com/curl/curl.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^curl-//;s/\([^-]*-g\)/r\1/;s/[_-]/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  
+  ./buildconf
+  ./configure --prefix='/usr' \
+              --enable-ipv6 \
+              --enable-unix-sockets \
+              --without-libidn \
+              --without-libidn2 \
+              --disable-static \
+              --disable-ldap \
+              --with-pic
+
+  make
+}
+
+package(){
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+}
+
+package_curl-doc() {
+  package-doc
+}
+
+package_curl-dev() {
+  package-dev
+}
+
+package_libcurl() {
+  package-lib
+}
+
+package_curl() {
+  package-base
+}
