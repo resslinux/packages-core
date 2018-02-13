@@ -1,0 +1,86 @@
+pkgrealname='cpython'
+pkgbase='python'
+pkgname=('python-doc' 'python-dev' 'python-tests' 'python')
+pkgver=3.7.0a4.r272.gf0bc645dfe
+pkgrel=1
+pkgdesc='Next generation of the python high-level scripting language'
+url='https://www.python.org/'
+arch=('x86_64')
+license=('custom')
+depends_doc=()
+depends_dev=('python')
+depends=('libressl-lib' 'zlib')
+source=('git://github.com/python/cpython.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgrealname}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgrealname}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/'-flto'}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/'-flto'}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/'-flto'}
+  
+  ./configure --prefix='/usr' \
+              --disable-rpath \
+              --enable-ipv6 \
+              --enable-loadable-sqlite-extensions \
+              --enable-shared \
+              --with-computed-gotos \
+              --with-dbmliborder=gdbm:ndbm \
+              --with-system-expat \
+              --with-system-ffi \
+              --with-threads
+
+  # set thread stack size to 1MB so we don't segfault before we hit sys.getrecursionlimit()
+  make EXTRA_CFLAGS="${CFLAGS} -DTHREAD_STACK_SIZE=0x100000"
+}
+
+package(){
+  package-init
+  
+  cd "${pkgrealname}"
+  
+  make DESTDIR="${tmpdir}" EXTRA_CFLAGS="${CFLAGS}" install maninstall
+  
+  install -Dm644 LICENSE "${tmpdir}/usr/share/licenses/${pkgbase}/LICENSE"
+  
+  rm -r "${tmpdir}"/usr/bin/idle* "${tmpdir}"/usr/lib/python*/idlelib "${tmpdir}"/usr/lib/python*/tkinter
+  
+  ln -s "python3" "${tmpdir}/usr/bin/python"
+  ln -s "python3-config" "${tmpdir}/usr/bin/python-config"
+  ln -s "pydoc3" "${tmpdir}/usr/bin/pydoc"
+}
+
+package_python-doc() {
+  package-doc
+}
+
+package_python-dev() {
+  package-dev
+}
+
+package_python-tests() {
+  pkgdesc="The test modules from the main python package"
+  
+  local version=$(grep "m4_define(PYTHON_VERSION" "${pkgrealname}/configure.ac" | cut -d " " -f 2 | cut -d ")" -f 1)
+  
+  cd "${tmpdir}"/usr/lib/python${version}
+  
+  local i; for i in */test */tests; do
+    mkdir -p "${pkgdir}"/usr/lib/python${version}/"${i}"
+    mv "${i}"/* "${pkgdir}"/usr/lib/python${version}/"${i}"
+    rm -rf "${i}"
+  done
+  
+  mv "${tmpdir}"/usr/lib/python${version}/test "${pkgdir}"/usr/lib/python${version}/
+}
+
+package_python() {
+  package-base
+}
