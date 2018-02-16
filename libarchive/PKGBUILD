@@ -10,7 +10,7 @@ depends_doc=()
 depends_lib=('libressl-lib' 'zlib')
 depends_dev=('libarchive' 'libressl-dev')
 depends=('libressl-lib')
-makedepends=('libressl-dev' 'zlib-dev')
+makedepends=('libressl-dev' 'zlib-dev' 'cmake' 'ninja' 'clang')
 source=('git://github.com/libarchive/libarchive.git'
         'libressl.patch')
 sha256sums=('SKIP'
