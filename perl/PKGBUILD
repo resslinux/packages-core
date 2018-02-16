@@ -1,0 +1,144 @@
+pkgbase='perl'
+pkgname=('perl-doc' 'perl-dev' 'miniperl' 'perl-utils' 'perl')
+pkgver=5.26.1.r0.g714a461a2a
+pkgrel=1
+pkgdesc='A highly capable, feature-rich programming language'
+url='https://www.perl.org/'
+arch=('x86_64')
+license=('Artistic GPL-2.0')
+depends_doc=()
+depends_dev=('perl')
+depends=('musl' 'zlib' 'bzip2')
+#source=('http://www.cpan.org/src/5.0/perl-5.26.1.tar.gz')
+source=('git://perl5.git.perl.org/perl.git#tag=v5.26.1')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+#prepare() {
+  #chmod +w "${pkgbase}"/*.c
+  
+  #cd "${pkgbase}"
+  #sed -e 's/less -R/less/g' -e 's/libswanted="\(.*\) nsl\(.*\)"/libswanted="\1\2"/g' -i ./Configure
+  
+  # Ensure that we never accidentally bundle zlib or bzip2
+  #rm -rf "cpan/Compress-Raw-Zlib/zlib-src"
+  #rm -rf "cpan/Compress-Raw-Bzip2/bzip2-src"
+  
+  #sed -i '/\(bzip2\|zlib\)-src/d' MANIFEST
+#}
+
+build() {
+  cd "${pkgbase}"
+  
+  #BUILD_ZLIB=0
+  #BUILD_BZIP2=0
+  #BZIP2_LIB=/usr/lib
+  #BZIP2_INCLUDE=/usr/include
+  
+  #export BUILD_ZLIB BUILD_BZIP2 BZIP2_LIB BZIP2_INCLUDE
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  
+  ./Configure -des -Dcc=clang -Dusethreads -Duseshrplib -Doptimize="${CFLAGS}" \
+    -Dprefix=/usr -Dvendorprefix=/usr \
+    -Dprivlib=/usr/share/perl5/core_perl \
+    -Darchlib=/usr/lib/perl5/core_perl \
+    -Dsitelib=/usr/share/perl5/site_perl \
+    -Dsitearch=/usr/lib/perl5/site_perl \
+    -Dvendorlib=/usr/share/perl5/vendor_perl \
+    -Dvendorarch=/usr/lib/perl5/vendor_perl \
+    -Dinc_version_list=none \
+    -Dman1ext=1perl -Dman3ext=3perl -Dcccdlflags='-fPIC' \
+    -Dlddlflags="-shared ${LDFLAGS}" -Dldflags="${LDFLAGS}"
+  
+  #make depend
+  
+  #make libperl.so
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+  
+  find "${tmpdir}" -name '.*' -delete
+  
+  local suffix=$(grep "^version=" "config.sh" | cut -d "'" -f 2)
+  
+  #for i in ${tmpdir}/usr/bin/*${suffix}; do
+  #  mv "${i}" "${i//${suffix}/}"
+  #done
+}
+
+package_miniperl() {
+  install -Dm755 "${pkgbase}/miniperl" "${pkgdir}/usr/bin/miniperl"
+}
+
+package_perl-doc() {
+  package-doc
+  
+  local file; for file in $(find "${tmpdir}" -name "*.pod"); do
+    file=${file#$tmpdir/}
+    install -d "${pkgdir}"/${file%/*}
+    mv "${tmpdir}/${file}" "${pkgdir}/$file"
+  done
+}
+
+package_perl-dev() {
+  install -d "${pkgdir}/usr/lib/perl5/core_perl"
+  mv "${tmpdir}/usr/lib/perl5/core_perl/Devel" "${pkgdir}/usr/lib/perl5/core_perl/"
+  
+  install -d "${pkgdir}/usr/bin"
+  
+  mv "${tmpdir}/usr/bin/h2xs" \
+     "${tmpdir}/usr/bin/perlivp" \
+     "${tmpdir}/usr/bin/enc2xs" \
+     "${tmpdir}/usr/bin/xsubpp" \
+     "${pkgdir}/usr/bin/"
+
+  package-dev
+}
+
+package_perl-utils() {
+  pkgdesc="$pkgdesc (misc utilities)"
+  depends=('perl')
+  
+  install -d "${pkgdir}/usr/bin"
+  
+  local file
+  for file in corelist \
+              cpan \
+              encguess \
+              libnetcfg \
+              h2ph \
+              instmodsh \
+              json_pp \
+              perlbug \
+              perlthanks \
+              piconv \
+              pl2pm \
+              prove \
+              ptar \
+              ptardiff \
+              ptargrep \
+              shasum \
+              splain \
+              zipdetails
+  do
+    mv "${tmpdir}/usr/bin/${file}" "${pkgdir}/usr/bin/"
+  done
+}
+
+package_perl() {
+  package-base
+}
