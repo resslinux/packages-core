@@ -7,6 +7,7 @@ arch=('any')
 license=('BSD')
 groups=('base')
 depends=('iana-etc')
+makedepends=('make')
 backup=('etc/TZ'
         'etc/fstab'
         'etc/group'
