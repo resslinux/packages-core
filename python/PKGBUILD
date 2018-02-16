@@ -1,7 +1,7 @@
 pkgrealname='cpython'
 pkgbase='python'
 pkgname=('python-doc' 'python-dev' 'python-tests' 'python')
-pkgver=3.7.0a4.r272.gf0bc645dfe
+pkgver=3.7.0a4.r280.gbd093355a6
 pkgrel=1
 pkgdesc='Next generation of the python high-level scripting language'
 url='https://www.python.org/'
