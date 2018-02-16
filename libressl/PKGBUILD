@@ -10,7 +10,7 @@ depends_doc=()
 depends_dev=('libressl')
 depends_lib=('musl')
 depends=('musl' 'libressl-lib')
-makedepends=('linux-headers')
+makedepends=('linux-headers' 'perl' 'cmake' 'ninja' 'clang')
 source=('libressl'::'git://github.com/libressl-portable/portable'
         'libressl-openbsd'::'git://github.com/libressl-portable/openbsd'
         'netcat.c.patch')
