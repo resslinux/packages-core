@@ -8,7 +8,7 @@ arch=('x86_64')
 license=('GPL2+')
 depends_doc=()
 depends=('libressl-lib')
-makedepends=('python' 'libressl-dev')
+makedepends=('python' 'make' 'clang' 'libressl-dev')
 source=('git://anonscm.debian.org/collab-maint/ca-certificates.git'
         'c_rehash.c'
         'certhash'
