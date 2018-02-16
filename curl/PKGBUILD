@@ -1,6 +1,6 @@
 pkgbase='curl'
-pkgname=('curl-doc' 'curl-dev' 'libcurl' 'curl')
-pkgver=7.58.0.r45.ga19afaccf
+pkgname=('curl-doc' 'libcurl-dev' 'libcurl' 'curl')
+pkgver=7.58.0.r85.g5a44c9fa8
 pkgrel=1
 pkgdesc='An URL retrival utility and library'
 url='https://curl.haxx.se/'
@@ -10,7 +10,7 @@ depends_doc=()
 depends_lib=('ca-certificates' 'zlib')
 depends_dev=('libcurl')
 depends=('libcurl')
-makedepends=('libressl-dev')
+makedepends=('make' 'clang' 'libressl-dev' 'autoconf' 'automake' 'libtool')
 source=('git://github.com/curl/curl.git')
 sha256sums=('SKIP')
 
@@ -52,8 +52,11 @@ package_curl-doc() {
   package-doc
 }
 
-package_curl-dev() {
+package_libcurl-dev() {
   package-dev
+  
+  mv "${pkgdir}/usr/bin/curl-config" "${tmpdir}/usr/bin/"
+  rmdir "${pkgdir}/usr/bin"
 }
 
 package_libcurl() {
