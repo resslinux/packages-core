@@ -1,6 +1,6 @@
 pkgbase='perl'
 pkgname=('perl-doc' 'perl-dev' 'miniperl' 'perl-utils' 'perl')
-pkgver=5.27.8.r272.g1e888967e7
+pkgver=5.27.8.r242.ge0280e4921
 pkgrel=1
 pkgdesc='A highly capable, feature-rich programming language'
 url='https://www.perl.org/'
