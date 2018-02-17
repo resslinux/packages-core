@@ -9,6 +9,7 @@ license=('zlib')
 depends_doc=()
 depends_dev=('zlib')
 depends=('musl')
+makedepends=('cmake' 'ninja' 'clang')
 source=('git://github.com/madler/zlib.git')
 sha256sums=('SKIP')
 
