@@ -23,9 +23,9 @@ pkgver() {
 build() {
   cd "${pkgbase}"
   
-  CFLAGS=${CFLAGS//'-flto=thin'/}
-  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
-  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  CFLAGS=${CFLAGS//'-flto=thin'/'-flto'}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/'-flto'}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/'-flto'}
   
   ./buildconf
   ./configure --prefix='/usr' \
