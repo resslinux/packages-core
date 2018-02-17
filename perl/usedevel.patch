@@ -1,0 +1,11 @@
+--- a/Configure
++++ b/Configure
+@@ -2281,7 +2281,7 @@
+ xversion=`awk '/define[ 	]+PERL_VERSION/ {print $3}' $rsrc/patchlevel.h`
+ case "$usedevel" in
+ $define|true|[yY]*)
+-    usedevel="$define" ;;
++    usedevel="$undef" ;;
+ *) case "$xversion" in
+    *[13579])
+ 	cat >&4 <<EOH

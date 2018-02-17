@@ -1,0 +1,47 @@
+--- a/MANIFEST
++++ b/MANIFEST
+@@ -167,16 +167,6 @@
+ cpan/bignum/t/scope_i.t			See if no bigint works
+ cpan/bignum/t/scope_r.t			See if no bigrat works
+ cpan/Compress-Raw-Bzip2/Bzip2.xs
+-cpan/Compress-Raw-Bzip2/bzip2-src/blocksort.c
+-cpan/Compress-Raw-Bzip2/bzip2-src/bzlib.c
+-cpan/Compress-Raw-Bzip2/bzip2-src/bzlib.h
+-cpan/Compress-Raw-Bzip2/bzip2-src/bzlib_private.h
+-cpan/Compress-Raw-Bzip2/bzip2-src/compress.c
+-cpan/Compress-Raw-Bzip2/bzip2-src/crctable.c
+-cpan/Compress-Raw-Bzip2/bzip2-src/decompress.c
+-cpan/Compress-Raw-Bzip2/bzip2-src/huffman.c
+-cpan/Compress-Raw-Bzip2/bzip2-src/LICENSE
+-cpan/Compress-Raw-Bzip2/bzip2-src/randtable.c
+ cpan/Compress-Raw-Bzip2/fallback/constants.h
+ cpan/Compress-Raw-Bzip2/fallback/constants.xs
+ cpan/Compress-Raw-Bzip2/lib/Compress/Raw/Bzip2.pm
+@@ -204,27 +194,6 @@
+ cpan/Compress-Raw-Zlib/t/compress/CompTestUtils.pm
+ cpan/Compress-Raw-Zlib/typemap			Compress::Raw::Zlib
+ cpan/Compress-Raw-Zlib/Zlib.xs			Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/adler32.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/compress.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/crc32.c		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/crc32.h		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/deflate.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/deflate.h	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/infback.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inffast.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inffast.h	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inffixed.h	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inflate.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inflate.h	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inftrees.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/inftrees.h	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/trees.c		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/trees.h		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/uncompr.c	Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/zconf.h		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/zlib.h		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/zutil.c		Compress::Raw::Zlib
+-cpan/Compress-Raw-Zlib/zlib-src/zutil.h		Compress::Raw::Zlib
+ cpan/Config-Perl-V/t/10_base.t			Config::Perl::V
+ cpan/Config-Perl-V/t/20_plv56.t			Config::Perl::V
+ cpan/Config-Perl-V/t/21_plv58.t			Config::Perl::V
