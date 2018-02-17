@@ -7,6 +7,7 @@ url='https://gitweb.gentoo.org/proj/udev-gentoo-scripts.git/'
 arch=('any')
 license=('GPL2')
 depends=('filesystem')
+makedepends=('make')
 source=('git://anongit.gentoo.org/proj/udev-gentoo-scripts.git')
 sha256sums=('SKIP')
 
