@@ -11,10 +11,12 @@ depends=('filesystem')
 makedepends=('make' 'clang')
 source=('git://git.musl-libc.org/musl'
         '__stack_chk_fail_local.c'
-        'compiler-rt.patch')
+        'compiler-rt.patch'
+        'flto.patch')
 sha256sums=('SKIP'
             '299a7d75a09de3e2e11e7fb4acc3182e4a14e868093d2f30938fce9bfcff13da'
-            'f818027345c0fde641b1edd5d0c79b0581293d65e57d59fbf0b0b7c490c6e57b')
+            'f818027345c0fde641b1edd5d0c79b0581293d65e57d59fbf0b0b7c490c6e57b'
+            '3f756dd782fcc4bb551c4d362d0d2603b23660f105af484d91115cee503b7a7c')
 
 pkgver() {
   cd "${pkgbase}"
@@ -26,14 +28,15 @@ prepare() {
   cd "${pkgbase}"
   
   patch -Np1 -i "${srcdir}/compiler-rt.patch"
+  patch -Np1 -i "${srcdir}/flto.patch"
 }
 
 build() {
   cd "${pkgbase}"
   
-  CFLAGS=${CFLAGS//'-flto=thin'/}
-  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
-  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  CFLAGS=${CFLAGS//'-flto=thin'/'-flto'}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/'-flto'}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/'-flto'}
   
   # provide minimal libssp_nonshared.a so we don't need libssp from gcc
   ${CROSS_COMPILE}clang $CPPFLAGS $CFLAGS -c "${srcdir}/__stack_chk_fail_local.c" -o "__stack_chk_fail_local.o"
