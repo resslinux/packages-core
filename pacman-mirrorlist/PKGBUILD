@@ -5,6 +5,7 @@ pkgdesc='Ress Linux mirror list for use by pacman'
 url='https://github.com/resslinux/pacman-mirrorlist'
 arch=('any')
 license=('BSD')
+makedepends=('make')
 backup=('etc/pacman.d/mirrorlist')
 source=('git://github.com/resslinux/pacman-mirrorlist.git')
 sha256sums=('SKIP')
