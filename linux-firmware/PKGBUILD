@@ -6,6 +6,7 @@ url='https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 arch=('any')
 license=('GPL2' 'GPL3' 'custom')
 depends=('filesystem')
+makedepends=('make')
 options=(!strip)
 source=('git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git')
 sha256sums=('SKIP')
