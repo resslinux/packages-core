@@ -9,6 +9,7 @@ license=('BSD')
 depends_doc=()
 depends_dev=('openrc')
 depends=('musl')
+makedepends=('make' 'clang')
 source=('git://anongit.gentoo.org/proj/openrc.git')
 sha256sums=('SKIP')
 
