@@ -1,6 +1,6 @@
 pkgbase='musl'
 pkgname=('musl-dev' 'musl')
-pkgver=1.1.18.r67.gb3ae7bea
+pkgver=1.1.18.r76.g23ddab85
 pkgrel=1
 pkgdesc='Lightweight implementation of C standard library'
 url='https://www.musl-libc.org/'
@@ -54,6 +54,8 @@ package() {
   
   install -d "${tmpdir}/bin"
   ln -sf "/lib/ld-musl-${CARCH}.so.1" "${tmpdir}/bin/ldd"
+
+  rm "${tmpdir}/usr/include/libintl.h"
 }
 
 package_musl-dev() {
