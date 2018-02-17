@@ -61,7 +61,9 @@ build() {
               -Dvendorarch='/usr/lib/perl5/vendor_perl' \
               -Dinc_version_list=none \
               -Dman1ext=1perl \
+              -Dman1dir=/usr/share/man/man1 \
               -Dman3ext=3perl \
+              -Dman3dir=/usr/share/man/man3 \
               -Dlddlflags="-shared ${LDFLAGS}" \
               -Dldflags="${LDFLAGS}"
 
