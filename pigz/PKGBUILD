@@ -9,7 +9,7 @@ license=('custom')
 groups=('base')
 depends_doc=()
 depends=('zlib')
-makedepends=('zlib-dev')
+makedepends=('zlib-dev' 'make' 'clang')
 source=('git://github.com/madler/pigz.git'
         'makefile.patch')
 sha256sums=('SKIP'
