@@ -1,0 +1,49 @@
+pkgbase='gnu-efi'
+pkgname=('gnu-efi-dev' 'gnu-efi')
+pkgver=3.0.6.r11.g3b523e3
+pkgrel=1
+pkgdesc='Development Libraries and headers for EFI'
+url='https://sourceforge.net/projects/gnu-efi/'
+arch=('x86_64')
+license=('BSD')
+depends_dev=('gnu-efi')
+depends=('filesystem')
+makedepends=('make' 'clang')
+source=('gnu-efi::git://git.code.sf.net/p/gnu-efi/code'
+        'clang.patch')
+sha256sums=('SKIP'
+            '2f4b5cc7c956ca7dc58a31c3cf24e41246c46db42c5cd32aa1c8cdff9fe0179f')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/clang.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make PREFIX='/usr' INSTALLROOT="${tmpdir}" install
+}
+
+package_gnu-efi-dev() {
+  package-dev
+}
+
+package_gnu-efi() {
+  package-base
+}
