@@ -1,0 +1,50 @@
+pkgbase='libffi'
+pkgname=('libffi-doc' 'libffi-dev' 'libffi')
+pkgver=3.2.1.r350.g9429968
+pkgrel=1
+pkgdesc='Portable foreign function interface library'
+url='https://sourceware.org/libffi/'
+arch=('x86_64')
+license=('MIT')
+depends_doc=()
+depends_dev=('libffi')
+depends=('musl')
+makedepends=('autoconf' 'automake' 'libtool' 'texinfo' 'make' 'clang')
+source=('git://github.com/libffi/libffi.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  
+  ./configure --prefix='/usr'
+  
+  make
+}
+
+package(){
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+}
+
+package_libffi-doc() {
+  package-doc
+}
+
+package_libffi-dev() {
+  package-dev
+}
+
+package_libffi() {
+  package-base
+}
