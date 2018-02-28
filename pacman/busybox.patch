@@ -1,0 +1,13 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -338,8 +338,8 @@
+ GCC_VISIBILITY_CC
+ 
+ # Host-dependant definitions
+-DEFAULT_DUFLAGS=" -sk --apparent-size"
+-DEFAULT_SEDINPLACEFLAGS=" --follow-symlinks -i"
++DEFAULT_DUFLAGS=" -sk"
++DEFAULT_SEDINPLACEFLAGS=" -i"
+ INODECMD="stat -c '%i %n'"
+ OWNERCMD="stat -c '%u:%g'"
+ MODECMD="stat -c '%a'"

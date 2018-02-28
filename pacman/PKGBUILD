@@ -1,0 +1,134 @@
+pkgbase='pacman'
+pkgname=('pacman-doc' 'pacman-dev' 'pacman-zsh-completition'
+         'pacman-bash-completition' 'makepkg-bash-completion'
+         'makepkg' 'pacman')
+pkgver=5.0.1.r223.ga7dbe463
+pkgrel=1
+pkgdesc='A library-based package manager with dependency support'
+url='https://www.archlinux.org/pacman/'
+arch=('x86_64')
+license=('GPL')
+depends_doc=()
+depends_dev=('pacman')
+depends=('libcurl' 'libarchive' 'libressl-lib' 'busybox' 'pacman-mirrorlist')
+makedepends=('gettext-dev' 'xz' 'pkgconf' 'libtool' 'libarchive-dev' 'libressl-dev' 'curl-dev' 'asciidoc' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.archlinux.org/pacman.git'
+        'busybox.patch'
+        'ress.patch'
+        'ress_functions.sh'
+        'pacman.conf'
+        'makepkg.conf')
+sha256sums=('SKIP'
+            'e4695e89adbeaabb477736c1544c8412f0b6bd3a8750c12df2b5a20f89226091'
+            '9818509443eefc192f19ec54c6f50f4fcb621fc417b71845f0eefefa98e90067'
+            '90936859d059ce9e1b00d78748f7115c5df488beef1fd5364e408589ba5274fb'
+            '83bd34e8244139d997c5d20476716a73127d334d7b6c1d897ceb4d164bb848a9'
+            '95ba4322b0ba6891e9cba3d8d2662901910f80b2aeb3bc5932f0537d5e6fe9fd')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/busybox.patch"
+  patch -Np1 -i "${srcdir}/ress.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --localstatedir='/var' \
+              --enable-doc \
+              --with-libcurl \
+              --with-crypto=openssl \
+              --with-scriptlet-shell='/bin/sh' \
+              --with-ldconfig='/usr/bin/ldconfig'
+              
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+  
+  install -m644 "${srcdir}/ress_functions.sh" "${tmpdir}/usr/share/makepkg/"
+}
+
+package_pacman-doc() {
+  package-doc
+}
+
+package_pacman-dev() {
+  package-dev
+}
+
+package_pacman-zsh-completition() {
+  depends=('zsh' 'pacman')
+  
+  install -dm755 "${pkgdir}/usr/share/"
+  mv "${tmpdir}/usr/share/zsh" "${pkgdir}/usr/share/"
+}
+
+package_pacman-bash-completition() {
+  depends=('bash' 'pacman')
+  
+  install -dm755 "${pkgdir}/usr/share/bash-completion/completions"
+  
+  mv "${tmpdir}/etc/bash_completion.d/pacman" "${pkgdir}/usr/share/bash-completion/completions"
+  ln -s pacman "${pkgdir}/usr/share/bash-completion/completions/pacman-key"
+  
+  rmdir "${tmpdir}/etc/bash_completion.d"
+}
+
+package_makepkg-bash-completion() {
+  depends=('bash' 'makepkg' 'pacman-bash-completition')
+  
+  install -dm755 "${pkgdir}/usr/share/bash-completion/completions"
+  ln -s pacman "${pkgdir}/usr/share/bash-completion/completions/makepkg"
+}
+
+package_makepkg() {
+  depends=('bash' 'fakeroot' 'libarchive-tools' 'pigz')
+  groups=('base-devel')
+  backup=('etc/makepkg.conf')
+  
+  rm "${tmpdir}/etc/makepkg.conf"
+  
+  install -dm755 "${pkgdir}/etc"
+  install -m644 "${srcdir}/makepkg.conf" "${pkgdir}/etc/"
+  
+  install -dm755 "${pkgdir}/usr/bin"
+  
+  for f in $(ls "${tmpdir}/usr/bin/" | grep -v "pacman"); do
+    mv "${tmpdir}/usr/bin/${f}" "${pkgdir}/usr/bin/"
+  done
+  
+  install -dm755 "${pkgdir}/usr/share"
+  
+  for f in makepkg makepkg-template; do
+    mv "${tmpdir}/usr/share/${f}" "${pkgdir}/usr/share/"
+  done
+}
+
+package_pacman() {
+  groups=('base')
+  backup=('etc/pacman.conf')
+  
+  package-base
+  
+  cd "${pkgbase}"
+  
+  install -dm755 "${pkgdir}/etc"
+  install -m644 "${srcdir}/pacman.conf" "${pkgdir}/etc/"
+}
