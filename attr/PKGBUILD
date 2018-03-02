@@ -1,0 +1,74 @@
+pkgbase='attr'
+pkgname=('attr-doc' 'libattr-dev' 'libattr' 'attr')
+pkgver=2.4.48.r5.gfcb34db
+pkgrel=1
+pkgdesc='Utilities for managing filesystem extended attributes'
+url='https://savannah.nongnu.org/projects/attr'
+arch=('x86_64')
+license=('LGPL')
+depends_doc=()
+depends_dev=('libattr')
+depends_lib=('musl')
+depends=('musl' 'libattr')
+makedepends=('gettext-dev' 'xz' 'libtool' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.savannah.gnu.org/attr.git'
+        'lld.patch')
+sha256sums=('SKIP'
+            '9ec68b753c9184915e7e8c8b7a8314fc55cb8b6a7e4cbfd810d05df1714e531d')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/lld.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  
+  export INSTALL_USER=root
+  export INSTALL_GROUP=root
+  
+  ./configure --prefix=/ \
+              --exec-prefix=/ \
+              --sbindir=/bin \
+              --bindir=/usr/bin \
+              --libdir=/usr/lib \
+              --libexecdir=/usr/lib \
+              --includedir=/usr/include \
+              --mandir=/usr/share/man \
+              --datadir=/usr/share
+
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+}
+
+package_attr-doc() {
+  package-doc
+}
+
+package_libattr-dev() {
+  package-dev
+}
+
+package_libattr() {
+  package-lib
+}
+
+package_attr() {
+  package-base
+}
