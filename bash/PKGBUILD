@@ -1,0 +1,56 @@
+pkgbase='bash'
+pkgname=('bash-doc' 'bash-dev' 'bash')
+pkgver=4.4.r19.gb0776d8c
+pkgrel=1
+pkgdesc='The GNU Bourne Again shell'
+url='https://www.gnu.org/software/bash/bash.html'
+arch=('x86_64')
+license=('GPL3+')
+depends_doc=()
+depends_dev=('bash')
+depends=('musl')
+makedepends=('autoconf' 'make' 'clang')
+source=('git://git.savannah.gnu.org/bash.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^bash-//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./configure --prefix='/usr' \
+              --bindir='/bin' \
+              --mandir='/usr/share/man' \
+              --infodir='/usr/share/info' \
+              --without-curses \
+              --disable-nls \
+              --disable-readline \
+              --without-bash-malloc
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+}
+
+
+package_bash-doc() {
+  package-doc
+}
+
+package_bash-dev() {
+  package-dev
+}
+
+package_bash() {
+  package-base
+}
