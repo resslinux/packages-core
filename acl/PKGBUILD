@@ -1,0 +1,59 @@
+pkgbase='acl'
+pkgname=('acl-doc' 'libacl-dev' 'libacl' 'acl')
+pkgver=2.2.52.r55.gc39f7c5
+pkgrel=1
+pkgdesc='Access control list utilities'
+url='https://savannah.nongnu.org/projects/acl'
+arch=('x86_64')
+license=('LGPL')
+depends_doc=()
+depends_dev=('libacl')
+depends_lib=('musl' 'libattr')
+depends=('musl' 'libacl')
+makedepends=('libattr-dev' 'gettext-dev' 'xz' 'libtool' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.savannah.gnu.org/acl.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  
+  export INSTALL_USER=root
+  export INSTALL_GROUP=root
+  
+  ./configure --prefix='/usr' \
+              --libdir='/usr/lib' \
+              --libexecdir='/usr/lib'
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+}
+
+package_acl-doc() {
+  package-doc
+}
+
+package_libacl-dev() {
+  package-dev
+}
+
+package_libacl() {
+  package-lib
+}
+
+package_acl() {
+  package-base
+}
