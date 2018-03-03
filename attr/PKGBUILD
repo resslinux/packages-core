@@ -36,15 +36,15 @@ build() {
   export INSTALL_USER=root
   export INSTALL_GROUP=root
   
-  ./configure --prefix=/ \
-              --exec-prefix=/ \
-              --sbindir=/bin \
-              --bindir=/usr/bin \
-              --libdir=/usr/lib \
-              --libexecdir=/usr/lib \
-              --includedir=/usr/include \
-              --mandir=/usr/share/man \
-              --datadir=/usr/share
+  ./configure --prefix='/' \
+              --exec-prefix='/' \
+              --sbindir='/bin' \
+              --bindir='/usr/bin' \
+              --libdir='/usr/lib' \
+              --libexecdir='/usr/lib' \
+              --includedir='/usr/include' \
+              --mandir='/usr/share/man' \
+              --datadir='/usr/share'
 
   make
 }
