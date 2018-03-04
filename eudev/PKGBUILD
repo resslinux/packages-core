@@ -1,0 +1,76 @@
+pkgbase='eudev'
+pkgname=('eudev-doc' 'eudev-dev' 'libeudev' 'eudev-netifnames' 'eudev')
+pkgver=3.2.5.r16.g9727d157d
+pkgrel=1
+pkgdesc='OpenRC compatible fork of udev'
+url='https://wiki.gentoo.org/wiki/Project:Eudev'
+arch=('x86_64')
+license=('GPL2')
+depends_doc=()
+depends_dev=('eudev')
+depends_lib=('musl')
+depends=('libeudev' 'udev-initscripts')
+makedepends=('linux-headers' 'gperf' 'libxslt' 'pkgconf' 'libtool' 'autoconf' 'automake' 'make' 'clang')
+source=('git://github.com/gentoo/eudev.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --with-rootprefix= \
+              --with-rootrundir='/run' \
+              --with-rootlibexecdir='/lib/udev' \
+              --libdir='/usr/lib' \
+              --enable-split-usr \
+              --enable-manpages \
+              --disable-hwdb \
+              --disable-kmod \
+              --disable-blkid \
+              --exec-prefix='/'
+
+  make
+}
+
+package(){
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+}
+
+package_eudev-doc() {
+  package-doc
+}
+
+package_eudev-dev() {
+  package-dev
+}
+
+package_libeudev() {
+  package-lib
+}
+
+package_eudev-netifnames() {
+  depends=('eudev')
+  
+  install -d "${pkgdir}/lib/udev/rules.d"
+  
+  mv "${tmpdir}/lib/udev/rules.d/80-net-name-slot.rules" "${pkgdir}/lib/udev/rules.d/"
+}
+
+package_eudev() {
+  groups=('base')
+  
+  package-base
+}
