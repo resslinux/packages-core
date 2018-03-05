@@ -1,0 +1,68 @@
+pkgbase='rsync'
+pkgname=('rsync-doc' 'rsync-openrc' 'rsync')
+pkgver=3.1.3.r0.gd73762ee
+pkgrel=1
+pkgdesc='A file transfer program to keep remote files in sync'
+url='https://rsync.samba.org/'
+arch=('x86_64')
+license=('GPL3')
+depends_doc=()
+depends=('musl' 'zlib')
+makedepends=('zlib-dev' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.samba.org/rsync.git'
+        'rsyncd.conf'
+        'rsyncd.confd'
+        'rsyncd.initd'
+        'rsyncd.logrotate')
+sha256sums=('SKIP'
+            '66107d14ff9ba528d352153c8ba54553a6ded8a58cd84999851badc7c4719a92'
+            'd8a463dc1d8c677f9b3b2014a4987c75b45a1335acf29affe3ea0d4af857024d'
+            '23254dde2716133a586793364ce778269091910ab295388b0e850eeff7e9350d'
+            'eb54100686a253d4d14c9c67fcc20f92d88c0616692bffea899c6a8f8f980c7c')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --mandir='/usr/share/man' \
+              --localstatedir='/var' \
+              --disable-acl-support \
+              --disable-xattr-support \
+              --with-included-zlib=no \
+              --with-included-popt=yes
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make DESTDIR="${tmpdir}" install
+}
+
+package_rsync-doc() {
+  package-doc
+}
+
+package_rsync-openrc() {
+  depends=()
+  
+  install -Dm755 "${srcdir}/rsyncd.initd" "${pkgdir}/etc/init.d/rsyncd"
+  install -Dm644 "${srcdir}/rsyncd.confd" "${pkgdir}/etc/conf.d/rsyncd"
+}
+
+package_rsync() {
+  package-base
+  
+  install -Dm644 "${srcdir}/rsyncd.conf" "${pkgdir}/etc/rsyncd.conf"
+  install -Dm644 "${srcdir}/rsyncd.logrotate" "${pkgdir}/etc/logrotate.d/rsyncd"
+}
