@@ -1,0 +1,29 @@
+pkgname='gettext-tiny'
+pkgver=0.2.0.r24.g69ba3c3
+pkgrel=1
+pkgdesc='Lightweight replacement of the GNU Gettext Suite'
+url='https://github.com/sabotage-linux/gettext-tiny'
+arch=('x86_64')
+license=('MIT')
+depends=('musl')
+makedepends=('make' 'clang')
+source=('git://github.com/sabotage-linux/gettext-tiny.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgname}"
+  
+  make LIBINTL='MUSL'
+}
+
+package() {
+  cd "${pkgname}"
+
+  make DESTDIR="${pkgdir}" LIBINTL='MUSL' prefix='/usr' install
+}
