@@ -7,8 +7,10 @@ arch=('x86_64')
 license=('MIT')
 depends=('musl')
 makedepends=('make' 'clang')
-source=('git://github.com/sabotage-linux/gettext-tiny.git')
-sha256sums=('SKIP')
+source=('git://github.com/sabotage-linux/gettext-tiny.git'
+        'auxdir.patch')
+sha256sums=('SKIP'
+            '5f69e86e9a1b9b6661fabd9b907f99d4d6581c5e13db4ad6a02cc8b840884749')
 
 pkgver() {
   cd "${pkgname}"
@@ -16,10 +18,16 @@ pkgver() {
   git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/auxdir.patch"
+}
+
 build() {
   cd "${pkgname}"
   
-  make LIBINTL='MUSL'
+  make LIBINTL='MUSL' prefix='/usr'
 }
 
 package() {

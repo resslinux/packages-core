@@ -1,0 +1,20 @@
+--- a/src/autopoint.in
++++ b/src/autopoint.in
+@@ -6,7 +6,16 @@
+ 	cp -f $i m4/
+ done
+ 
+-touch config.rpath ABOUT-NLS
++grep -q "AC_CONFIG_AUX_DIR" configure.ac
++
++if [ $? -eq 0 ] ; then
++  dirprefix=$(grep "AC_CONFIG_AUX_DIR" configure.ac | cut -d '[' -f 2 | cut -d ']' -f 1)"/"
++  mkdir -p ${dirprefix}
++else
++  dirprefix=""
++fi
++
++touch ${dirprefix}config.rpath ${dirrefix}ABOUT-NLS
+ 
+ for i in intl/Makefile.in po/Makefile.in.in ; do
+ 	install -D -m 644 @datadir@/data/autopoint_Makefile.in "$i"
