@@ -10,7 +10,7 @@ depends_doc=()
 depends_dev=('xz')
 depends_lib=('musl')
 depends=('xz-lib')
-makedepends=('gettext' 'gettext-dev' 'autoconf' 'automake' 'libtool' 'xz' 'make' 'clang')
+makedepends=('gettext-tiny' 'autoconf' 'automake' 'libtool' 'make' 'clang')
 source=(git+https://git.tukaani.org/xz.git)
 sha256sums=('SKIP')
 
