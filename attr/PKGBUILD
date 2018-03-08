@@ -10,7 +10,7 @@ depends_doc=()
 depends_dev=('libattr')
 depends_lib=('musl')
 depends=('musl' 'libattr')
-makedepends=('gettext-dev' 'xz' 'libtool' 'autoconf' 'automake' 'make' 'clang')
+makedepends=('gettext-tiny' 'libtool' 'autoconf' 'automake' 'make' 'clang')
 source=('git://git.savannah.gnu.org/attr.git'
         'lld.patch')
 sha256sums=('SKIP'
