@@ -10,7 +10,7 @@ depends_doc=()
 depends_dev=('libacl')
 depends_lib=('musl' 'libattr')
 depends=('musl' 'libacl')
-makedepends=('libattr-dev' 'gettext-dev' 'xz' 'libtool' 'autoconf' 'automake' 'make' 'clang')
+makedepends=('libattr-dev' 'gettext-tiny' 'libtool' 'autoconf' 'automake' 'make' 'clang')
 source=('git://git.savannah.gnu.org/acl.git')
 sha256sums=('SKIP')
 
