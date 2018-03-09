@@ -1,0 +1,53 @@
+pkgbase='zlib-ng'
+pkgname=('zlib-ng-doc' 'zlib-ng-dev' 'zlib-ng')
+pkgver=1.2.11.r814.g3e7e5e55
+pkgrel=1
+pkgdesc='Compression library implementing the deflate compression method found in gzip and PKZIP'
+url='https://github.com/Dead2/zlib-ng'
+arch=('x86_64')
+license=('zlib')
+depends_doc=()
+depends_dev=('zlib-ng')
+depends=('musl')
+makedepends=('libclang-dev' 'cmake' 'ninja' 'clang')
+source=('git://github.com/Dead2/zlib-ng.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  echo $(grep "set(VERSION" CMakeLists.txt | cut -d '"' -f 2).r$(git rev-list --count develop).g$(git rev-parse HEAD | cut -c1-8)
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  cmake -G 'Ninja' \
+        -DCMAKE_BUILD_TYPE:STRING='Release' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DINSTALL_LIB_DIR:PATH='/usr/lib' \
+        -DINSTALL_PKGCONFIG_DIR:PATH='/usr/lib/pkgconfig' \
+        -DZLIB_COMPAT:BOOL=ON
+  
+  ninja
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  DESTDIR="${tmpdir}" ninja install
+}
+
+package_zlib-ng-doc() {
+  package-doc
+}
+
+package_zlib-ng-dev() {
+  package-dev
+}
+
+package_zlib-ng() {
+  package-base
+}
