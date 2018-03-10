@@ -7,10 +7,10 @@ url='https://curl.haxx.se/'
 arch=('x86_64')
 license=('MIT')
 depends_doc=()
-depends_lib=('ca-certificates' 'zlib')
+depends_lib=('musl' 'libressl-lib' 'ca-certificates')
 depends_dev=('libcurl')
 depends=('libcurl')
-makedepends=('make' 'clang' 'libressl-dev' 'autoconf' 'automake' 'libtool')
+makedepends=('libressl-dev' 'libtool' 'autoconf' 'automake' 'make' 'clang')
 source=('git://github.com/curl/curl.git')
 sha256sums=('SKIP')
 
