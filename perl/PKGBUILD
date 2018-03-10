@@ -8,8 +8,8 @@ arch=('x86_64')
 license=('Artistic GPL-2.0')
 depends_doc=()
 depends_dev=('perl')
-depends=('musl' 'zlib' 'bzip2')
-makedepends=('make' 'clang' 'bzip2-dev' 'zlib-dev')
+depends=('musl' 'zlib-ng' 'bzip2')
+makedepends=('bzip2-dev' 'zlib-ng-dev' 'make' 'clang')
 source=('git://perl5.git.perl.org/perl.git'
         'manifest.patch'
         'usedevel.patch')
