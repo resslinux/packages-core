@@ -54,9 +54,6 @@ package_curl-doc() {
 
 package_libcurl-dev() {
   package-dev
-  
-  mv "${pkgdir}/usr/bin/curl-config" "${tmpdir}/usr/bin/"
-  rmdir "${pkgdir}/usr/bin"
 }
 
 package_libcurl() {
