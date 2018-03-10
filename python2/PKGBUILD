@@ -10,7 +10,7 @@ license=('custom')
 depends_doc=()
 depends_dev=('python2')
 depends=('musl')
-makedepends=('libclang-dev' 'expat-dev' 'libffi-dev' 'zlib-dev' 'linux-headers' 'make' 'clang')
+makedepends=('libclang-dev' 'expat-dev' 'libffi-dev' 'zlib-ng-dev' 'linux-headers' 'make' 'clang')
 source=('git://github.com/python/cpython.git#branch=2.7')
 sha256sums=('SKIP')
 
