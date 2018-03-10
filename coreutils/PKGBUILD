@@ -1,0 +1,76 @@
+pkgbase='coreutils'
+pkgname=('coreutils-doc' 'join' 'coreutils')
+pkgver=8.29.r16.gb1fa4aa63
+pkgrel=1
+pkgdesc='The basic file, shell and text manipulation utilities'
+url='https://www.gnu.org/software/coreutils/coreutils.html'
+arch=('x86_64')
+license=('GPL3')
+depends_doc=()
+depends=('musl' 'libattr')
+makedepends=('join' 'perl' 'rsync' 'xz' 'texinfo' 'bison' 'gperf' 'gettext-tiny' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.savannah.gnu.org/coreutils.git'
+        'git://git.savannah.gnu.org/gnulib.git'
+        'gettext-tiny.patch')
+sha256sums=('SKIP'
+            'SKIP'
+            'ee35762eeab79d8f86a67ce71e6417df18ed07e363a8219caae170060486e75c')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/gettext-tiny.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/'-flto'}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/'-flto'}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/'-flto'}
+  
+  ./bootstrap --no-git --gnulib-srcdir="${srcdir}/gnulib/"
+  
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --mandir='/usr/share/man' \
+              --infodir='/usr/share/info' \
+              --disable-nls \
+              --disable-libcap \
+              --without-gmp \
+              --enable-no-install-program=$(busybox --list | tr '\n' ',' | sed 's/.$//')
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make DESTDIR="${tmpdir}" install
+  
+  rm "${tmpdir}/usr/lib/charset.alias"
+}
+
+package_coreutils-doc() {
+  package-doc
+}
+
+package_join() {
+  depends=('musl' 'libattr')
+  
+  install -d "${pkgdir}/usr/bin/"
+  
+  mv "${tmpdir}/usr/bin/join" "${pkgdir}/usr/bin/"
+}
+
+package_coreutils() {
+  package-base
+}

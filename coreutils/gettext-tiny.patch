@@ -1,0 +1,12 @@
+--- a/bootstrap.conf
++++ b/bootstrap.conf
+@@ -334,9 +334,7 @@
+ buildreq="\
+ autoconf   2.64
+ automake   1.11.2
+-autopoint  0.19.2
+ bison      -
+-gettext    0.19.2
+ git        1.4.4
+ gperf      -
+ gzip       -
