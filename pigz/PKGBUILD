@@ -8,8 +8,8 @@ arch=('x86_64')
 license=('custom')
 groups=('base')
 depends_doc=()
-depends=('zlib')
-makedepends=('zlib-dev' 'make' 'clang')
+depends=('zlib-ng')
+makedepends=('zlib-ng-dev' 'make' 'clang')
 source=('git://github.com/madler/pigz.git'
         'makefile.patch')
 sha256sums=('SKIP'
