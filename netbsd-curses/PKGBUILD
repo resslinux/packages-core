@@ -1,0 +1,54 @@
+pkgbase='netbsd-curses'
+pkgname=('netbsd-curses-doc' 'netbsd-curses-dev' 'netbsd-curses')
+pkgver=0.2.1.r35.g3f44368
+pkgrel=1
+pkgdesc='libcurses and dependencies taken from netbsd and brought into a portable shape'
+url='https://github.com/sabotage-linux/netbsd-curses'
+arch=('x86_64')
+license=('BSD')
+depends_doc=()
+depends_dev=('netbsd-curses')
+depends=('musl')
+makedepends=('make' 'clang')
+source=('git://github.com/sabotage-linux/netbsd-curses.git'
+        'makefile.patch')
+sha256sums=('SKIP'
+            '248d33634e5575c3cb0900421f8e18d37e58a29687162520c194621bc9426c82')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/makefile.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make DESTDIR="${tmpdir}" PREFIX='/usr' install
+}
+
+package_netbsd-curses-doc() {
+  package-doc
+}
+
+package_netbsd-curses-dev() {
+  package-dev
+}
+
+package_netbsd-curses() {
+  package-base
+}
