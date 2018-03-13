@@ -1,0 +1,59 @@
+pkgbase='nano'
+pkgname=('nano-doc' 'nano')
+pkgver=2.9.4.r7.g3089a981
+pkgrel=1
+pkgdesc='Text Editor. GNU nano is designed to be a free replacement for the Pico text editor'
+url='https://nano-editor.org/'
+arch=('x86_64')
+license=('GPL')
+depends_doc=()
+depends=('musl' 'netbsd-curses')
+makedepends=('netbsd-curses-dev' 'linux-headers' 'texinfo' 'join' 'pkgconf' 'gettext-tiny' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.savannah.gnu.org/nano.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/'-flto'}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/'-flto'}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/'-flto'}
+  
+  ./autogen.sh
+  
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --mandir='/usr/share/man' \
+              --infodir='/usr/share/info' \
+              --disable-nls \
+              --disable-wrapping
+              
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  make DESTDIR="${tmpdir}" install
+  
+  rm "${tmpdir}/usr/lib/charset.alias"
+  rmdir "${tmpdir}/usr/lib/"
+  
+  install -Dm644 "doc/sample.nanorc" "${tmpdir}/etc/nanorc"
+}
+
+package_nano-doc() {
+  package-doc
+}
+
+package_nano() {
+  package-base
+}
