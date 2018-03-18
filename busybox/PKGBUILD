@@ -1,0 +1,74 @@
+pkgbase='busybox'
+pkgname=('busybox-doc' 'busybox')
+pkgver=1.28.0.r212.g3c08437db
+pkgrel=1
+pkgdesc='Size optimized toolbox of many common UNIX utilities'
+url='https://busybox.net/'
+arch=('x86_64')
+license=('GPL2')
+depends_doc=()
+depends=('musl')
+makedepends=('elf-toolchain' 'linux-headers' 'make' 'clang')
+source=('git://busybox.net/busybox.git'
+        'config'
+        'clang.patch')
+sha256sums=('SKIP'
+            '70ab91671c408608cc507f128ea1f8821b3c6f569efc586cc98f5e16651e02a1'
+            '114c822b93a7d8197038c960dab7a45901f5819d5d8caf11c578d9e99b4021e2')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/[_-]/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/clang.patch"
+  
+  cp -f "${srcdir}/config" .config
+  
+  #set install directory
+  sed -i -e "s|CONFIG_PREFIX=.*|CONFIG_PREFIX=\"${tmpdir}\"|" .config
+  
+  yes "" | make oldconfig
+}
+
+build() {
+  cd "$pkgbase"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+  
+  CFLAGS=${CFLAGS//'-flto=thin'/}
+  CXXFLAGS=${CXXFLAGS//'-flto=thin'/}
+  LDFLAGS=${LDFLAGS//'-flto=thin'/}
+  
+  make install
+  
+  install -d "${tmpdir}/var/lib/udhcpd"
+  install -Dm644 "examples/udhcp/udhcpd.conf" "${tmpdir}/etc/udhcpd.conf"
+  install -Dm755 "examples/udhcp/simple.script" "${tmpdir}/usr/share/udhcpc/default.script"
+  
+  install -Dm644 "docs/busybox.1" "${tmpdir}/usr/share/man/man1/busybox.1"
+}
+
+package_busybox-doc() {
+  package-doc
+}
+
+package_busybox() {
+  groups=('base')
+  
+  package-base
+}

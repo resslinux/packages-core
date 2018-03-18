@@ -1,0 +1,68 @@
+--- a/Makefile
++++ b/Makefile
+@@ -271,8 +271,8 @@
+ # Look for make include files relative to root of kernel src
+ MAKEFLAGS += --include-dir=$(srctree)
+ 
+-HOSTCC  	= gcc
+-HOSTCXX  	= g++
++HOSTCC  	= clang
++HOSTCXX  	= clang++
+ HOSTCFLAGS	:=
+ HOSTCXXFLAGS	:=
+ # We need some generic definitions
+@@ -289,7 +289,7 @@
+ # Make variables (CC, etc...)
+ 
+ AS		= $(CROSS_COMPILE)as
+-CC		= $(CROSS_COMPILE)gcc
++CC		= $(CROSS_COMPILE)clang
+ LD		= $(CC) -nostdlib
+ CPP		= $(CC) -E
+ AR		= $(CROSS_COMPILE)ar
+--- a/Makefile.flags
++++ b/Makefile.flags
+@@ -47,12 +47,11 @@
+ # gcc 3.x emits bogus "old style proto" warning on find.c:alloc_action()
+ CFLAGS += $(call cc-ifversion, -ge, 0400, -Wold-style-definition)
+ 
+-CFLAGS += $(call cc-option,-fno-builtin-strlen -finline-limit=0 -fomit-frame-pointer -ffunction-sections -fdata-sections,)
++CFLAGS += $(call cc-option,-fno-builtin-strlen -fomit-frame-pointer -ffunction-sections -fdata-sections,)
+ # -fno-guess-branch-probability: prohibit pseudo-random guessing
+ # of branch probabilities (hopefully makes bloatcheck more stable):
+ CFLAGS += $(call cc-option,-fno-guess-branch-probability,)
+-CFLAGS += $(call cc-option,-funsigned-char -static-libgcc,)
++CFLAGS += $(call cc-option,-funsigned-char,)
+-CFLAGS += $(call cc-option,-falign-functions=1 -falign-jumps=1 -falign-labels=1 -falign-loops=1,)
+ # Defeat .eh_frame bloat (gcc 4.6.3 x86-32 defconfig: 20% smaller busybox binary):
+ CFLAGS += $(call cc-option,-fno-unwind-tables,)
+ CFLAGS += $(call cc-option,-fno-asynchronous-unwind-tables,)
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -174,7 +174,7 @@
+ 		| $(GENKSYMS) -a $(ARCH)				\
+ 		> $(@D)/.tmp_$(@F:.o=.ver);				\
+ 									\
+-		$(LD) $(LDFLAGS) -r -o $@ $(@D)/.tmp_$(@F) 		\
++		$(LD) $(LDFLAGS) -o $@ $(@D)/.tmp_$(@F) 		\
+ 			-T $(@D)/.tmp_$(@F:.o=.ver);			\
+ 		rm -f $(@D)/.tmp_$(@F) $(@D)/.tmp_$(@F:.o=.ver);	\
+ 	else								\
+@@ -257,7 +257,7 @@
+ # If the list of objects to link is empty, just create an empty built-in.o
+ # -nostdlib is added to make "make LD=gcc ..." work (some people use that)
+ cmd_link_o_target = $(if $(strip $(obj-y)),\
+-		$(LD) -nostdlib $(ld_flags) -r -o $@ $(filter $(obj-y), $^),\
++		$(LD) -nostdlib $(ld_flags) -o $@ $(filter $(obj-y), $^),\
+ 		rm -f $@; $(AR) rcs $@)
+ 
+ $(builtin-target): $(obj-y) FORCE
+@@ -292,7 +292,7 @@
+ $($(subst $(obj)/,,$(@:.o=-y)))), $^)
+ 
+ quiet_cmd_link_multi-y = LD      $@
+-cmd_link_multi-y = $(LD) $(ld_flags) -r -o $@ $(link_multi_deps)
++cmd_link_multi-y = $(LD) $(ld_flags) -o $@ $(link_multi_deps)
+ 
+ quiet_cmd_link_multi-m = LD [M]  $@
+ cmd_link_multi-m = $(LD) $(ld_flags) $(LDFLAGS_MODULE) -o $@ $(link_multi_deps)
