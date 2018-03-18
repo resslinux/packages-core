@@ -1,0 +1,42 @@
+--- a/RichString.c
++++ b/RichString.c
+@@ -101,7 +101,7 @@
+    int newLen = from + len;
+    RichString_setLen(this, newLen);
+    for (int i = from, j = 0; i < newLen; i++, j++) {
+-      this->chptr[i] = (CharType) { .attr = attrs & 0xffffff, .chars = { (iswprint(data[j]) ? data[j] : '?') } };
++      this->chptr[i] = (CharType) { .attributes = attrs & 0xffffff, .vals = { (iswprint(data[j]) ? data[j] : '?') } };
+    }
+ }
+ 
+@@ -109,7 +109,7 @@
+    cchar_t* ch = this->chptr + start;
+    finish = CLAMP(finish, 0, this->chlen - 1);
+    for (int i = start; i <= finish; i++) {
+-      ch->attr = attrs;
++      ch->attributes = attrs;
+       ch++;
+    }
+ }
+@@ -118,7 +118,7 @@
+    wchar_t wc = btowc(c);
+    cchar_t* ch = this->chptr + start;
+    for (int i = start; i < this->chlen; i++) {
+-      if (ch->chars[0] == wc)
++      if (ch->vals[0] == wc)
+          return i;
+       ch++;
+    }
+--- a/RichString.h
++++ b/RichString.h
+@@ -41,8 +41,8 @@
+ #ifdef HAVE_LIBNCURSESW
+ #define RichString_printVal(this, y, x) mvadd_wchstr(y, x, (this).chptr)
+ #define RichString_printoffnVal(this, y, x, off, n) mvadd_wchnstr(y, x, (this).chptr + off, n)
+-#define RichString_getCharVal(this, i) ((this).chptr[i].chars[0] & 255)
+-#define RichString_setChar(this, at, ch) do{ (this)->chptr[(at)] = (CharType) { .chars = { ch, 0 } }; } while(0)
++#define RichString_getCharVal(this, i) ((this).chptr[i].vals[0] & 255)
++#define RichString_setChar(this, at, ch) do{ (this)->chptr[(at)] = (CharType) { .vals = { ch, 0 } }; } while(0)
+ #define CharType cchar_t
+ #else
+ #define RichString_printVal(this, y, x) mvaddchstr(y, x, (this).chptr)

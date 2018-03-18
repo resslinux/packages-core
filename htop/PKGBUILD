@@ -1,0 +1,65 @@
+pkgbase='htop'
+pkgname=('htop-doc' 'htop-desktop' 'htop')
+pkgver=2.1.0.r34.g5a75797
+pkgrel=1
+pkgdesc='An interactive process viewer'
+url='https://hisham.hm/htop/'
+arch=('x86_64')
+license=('GPL2')
+depends_doc=()
+depends=('musl' 'netbsd-curses')
+makedepends=('netbsd-curses-dev' 'pkgconf' 'autoconf' 'automake' 'make' 'clang')
+source=('git://github.com/hishamhm/htop.git'
+        'netbsd-curses.patch')
+sha256sums=('SKIP'
+            '3ffcf093335dbc8c081282d65f092cb974f37b417c04324422245792efaa6b91')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgbase}"
+  
+  patch -Np1 -i "${srcdir}/netbsd-curses.patch"
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  ./autogen.sh
+  
+  ./configure --prefix='/usr' \
+              --sysconfdir='/etc' \
+              --mandir='/usr/share/man' \
+              --localstatedir='/var' \
+              --enable-cgroup \
+              --enable-taskstats
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make DESTDIR="${tmpdir}" install
+}
+
+package_htop-doc() {
+  package-doc
+}
+
+package_htop-desktop() {
+  depends=('htop')
+  
+  install -dm755 "${pkgdir}/usr"
+  mv "${tmpdir}/usr/share" "${pkgdir}/usr/"
+}
+
+package_htop() {
+  package-base
+}
