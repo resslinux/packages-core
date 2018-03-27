@@ -1,0 +1,67 @@
+pkgbase='alsa-lib'
+pkgname=('alsa-lib-doc' 'alsa-lib-dev' 'alsa-lib' 'alsa')
+pkgver=1.1.5.r36.g7f084af4
+pkgrel=1
+pkgdesc='An alternative implementation of Linux sound support'
+url='https://alsa-project.org/'
+arch=('x86_64')
+license=('LGPL')
+depends_doc=()
+depends_dev=('alsa-lib')
+depends_lib=('musl')
+depends=('alsa-lib')
+makedepends=('linux-headers' 'libtool' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.alsa-project.org/alsa-lib.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  libtoolize --force --copy --automake
+  aclocal
+  autoheader
+  automake --foreign --copy --add-missing
+  autoconf
+  
+  ./configure --prefix='/usr' \
+              --disable-python \
+              --disable-static \
+              --disable-resmgr \
+              --enable-rawmidi \
+              --enable-seq \
+              --enable-aload \
+              --disable-dependency-tracking \
+              --without-versioned
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make DESTDIR="${tmpdir}" install
+}
+
+package_alsa-lib-doc() {
+  package-doc
+}
+
+package_alsa-lib-dev() {
+  package-dev
+}
+
+package_alsa-lib() {
+  package-lib
+}
+
+package_alsa() {
+  package-base
+}
