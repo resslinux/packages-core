@@ -1,5 +1,5 @@
 pkgbase='alsa-lib'
-pkgname=('alsa-lib-doc' 'alsa-lib-dev' 'alsa-lib' 'alsa')
+pkgname=('alsa-lib-doc' 'alsa-lib-dev' 'alsa-lib')
 pkgver=1.1.5.r36.g7f084af4
 pkgrel=1
 pkgdesc='An alternative implementation of Linux sound support'
@@ -59,9 +59,5 @@ package_alsa-lib-dev() {
 }
 
 package_alsa-lib() {
-  package-lib
-}
-
-package_alsa() {
   package-base
 }
