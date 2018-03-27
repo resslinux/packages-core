@@ -1,6 +1,6 @@
 pkgbase='gnu-efi'
 pkgname=('gnu-efi-dev' 'gnu-efi')
-pkgver=3.0.6.r11.g3b523e3
+pkgver=3.0.8.r0.gfc5af9e
 pkgrel=1
 pkgdesc='Development Libraries and headers for EFI'
 url='https://sourceforge.net/projects/gnu-efi/'
@@ -8,11 +8,11 @@ arch=('x86_64')
 license=('BSD')
 depends_dev=('gnu-efi')
 depends=('filesystem')
-makedepends=('make' 'clang')
+makedepends=('elf-toolchain' 'make' 'clang')
 source=('gnu-efi::git://git.code.sf.net/p/gnu-efi/code'
         'clang.patch')
 sha256sums=('SKIP'
-            '2f4b5cc7c956ca7dc58a31c3cf24e41246c46db42c5cd32aa1c8cdff9fe0179f')
+            'e020a678535c99c4eb289459a242087ab9fb75250a04fd9bbf41134d380e1be6')
 
 pkgver() {
   cd "${pkgbase}"

@@ -11,11 +11,3 @@
  AS           := $(prefix)$(CROSS_COMPILE)as
  LD           := $(prefix)$(CROSS_COMPILE)ld
  AR           := $(prefix)$(CROSS_COMPILE)ar
-@@ -174,7 +174,6 @@
-            -fno-stack-check
- endif
- 
--ARFLAGS += -U
- ASFLAGS += $(ARCH3264)
- LDFLAGS	+= -nostdlib --warn-common --no-undefined --fatal-warnings \
- 	   --build-id=sha1
