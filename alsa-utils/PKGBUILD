@@ -1,0 +1,58 @@
+pkgbase='alsa-utils'
+pkgname=('alsa-utils-doc' 'alsa-sound-test' 'alsa-utils')
+pkgver=1.1.5.r6.g588b3aa
+pkgrel=1
+pkgdesc='Advanced Linux Sound Architecture Utils'
+url='https://alsa-project.org/'
+arch=('x86_64')
+license=('GPL')
+depends_doc=()
+depends=('alsa-lib')
+makedepends=('alsa-lib-dev' 'netbsd-curses-dev' 'gettext-tiny' 'pkgconf' 'autoconf' 'automake' 'make' 'clang')
+source=('git://git.alsa-project.org/alsa-utils.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgbase}"
+  
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgbase}"
+  
+  autoreconf -fi
+  
+  ./configure --prefix='/usr' \
+              --disable-xmlto \
+              --disable-nls
+  
+  make
+}
+
+package() {
+  package-init
+  
+  cd "${pkgbase}"
+
+  make DESTDIR="${tmpdir}" install
+}
+
+package_alsa-utils-doc() {
+  package-doc
+}
+
+package_alsa-sound-test() {
+  install -d "${pkgdir}/usr/bin"
+  mv "${tmpdir}/usr/bin/speaker-test" "${pkgdir}/usr/bin/"
+  
+  install -d "${pkgdir}/usr/share"
+  mv "${tmpdir}/usr/share/sounds" "${pkgdir}/usr/share/"
+  
+  install -d "${pkgdir}/usr/share/alsa"
+  mv "${tmpdir}/usr/share/alsa/speaker-test" "${pkgdir}/usr/share/alsa/"
+}
+
+package_alsa-utils() {
+  package-base
+}
